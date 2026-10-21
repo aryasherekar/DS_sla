@@ -1,0 +1,213 @@
+#include <stdio.h> #include <stdlib.h> #include <string.h>
+
+struct Item { int itemID;
+char itemName[50]; char category[30]; char location[50]; char date[20];
+char status[20]; struct Item *next;
+};
+
+struct Item *head = NULL;
+
+
+/* Add an item to the linked list */ void addItem(void)
+{
+struct Item *newItem, *temp;
+
+
+newItem = malloc(sizeof(struct Item));
+
+
+if (newItem == NULL) { printf("\nMemory allocation failed.\n"); return;
+}
+
+
+printf("\nEnter Item ID: ");
+if (scanf("%d", &newItem->itemID) != 1) { printf("Invalid Item ID.\n");
+while (getchar() != '\n' && !feof(stdin)) {} free(newItem);
+return;
+}
+ 
+
+
+printf("Enter Item Name: ");
+scanf(" %49[^\n]", newItem->itemName);
+
+
+printf("Enter Category: ");
+scanf(" %29[^\n]", newItem->category);
+
+
+printf("Enter Location: ");
+scanf(" %49[^\n]", newItem->location);
+
+
+printf("Enter Date (DD-MM-YYYY): "); scanf(" %19[^\n]", newItem->date);
+
+printf("Enter Status: ");
+scanf(" %19[^\n]", newItem->status); newItem->next = NULL;
+if (head == NULL) { head = newItem;
+} else {
+temp = head;
+
+while (temp->next != NULL) { temp = temp->next;
+}
+
+
+temp->next = newItem;
+}
+
+
+printf("\nItem added successfully!\n");
+}
+
+
+/* Display all items */ void displayItems(void)
+{
+ 
+struct Item *temp = head;
+
+
+if (head == NULL) {
+printf("\nNo items available.\n"); return;
+}
+
+
+printf("\n========== ITEM LIST ==========\n");
+
+
+while (temp != NULL) {
+printf("\nItem ID : %d\n", temp->itemID); printf("Item Name : %s\n", temp->itemName); printf("Category : %s\n", temp->category); printf("Location : %s\n", temp->location); printf("Date	: %s\n", temp->date); printf("Status	 : %s\n", temp->status);
+
+temp = temp->next;
+}
+}
+
+
+/* Search an item using Binary Search */ void binarySearchItemByID(void)
+{
+struct Item *temp = head; struct Item *arr;
+struct Item key;
+
+
+int count = 0; int i, j;
+int low, high, mid, searchID;
+
+
+if (head == NULL) {
+printf("\nNo items available to search.\n"); return;
+}
+ 
+
+
+/* Count linked-list nodes */ while (temp != NULL) {
+count++;
+temp = temp->next;
+}
+
+
+/* Allocate array memory */
+arr = malloc(count * sizeof(struct Item));
+
+
+if (arr == NULL) {
+printf("\nMemory allocation failed.\n"); return;
+}
+
+
+/* Copy linked-list records into array */ temp = head;
+
+for (i = 0; i < count; i++) { arr[i] = *temp;
+temp = temp->next;
+}
+
+/* Sort records by Item ID using Insertion Sort */ for (i = 1; i < count; i++) {
+key = arr[i]; j = i - 1;
+
+while (j >= 0 && arr[j].itemID > key.itemID) { arr[j + 1] = arr[j];
+j--;
+}
+
+
+arr[j + 1] = key;
+}
+ 
+printf("\nEnter Item ID to search: ");
+
+
+if (scanf("%d", &searchID) != 1) { printf("Invalid Item ID.\n");
+
+while (getchar() != '\n' && !feof(stdin)) {}
+
+
+free(arr); return;
+}
+
+
+/* Perform Binary Search */ low = 0;
+high = count - 1;
+
+
+while (low <= high) {
+mid = low + (high - low) / 2;
+
+
+if (arr[mid].itemID == searchID) {
+printf("\n========== ITEM FOUND ==========\n");
+printf("Item ID : %d\n", arr[mid].itemID); printf("Item Name : %s\n", arr[mid].itemName); printf("Category : %s\n", arr[mid].category); printf("Location : %s\n", arr[mid].location); printf("Date	: %s\n", arr[mid].date); printf("Status	 : %s\n", arr[mid].status);
+
+free(arr); return;
+} else if (arr[mid].itemID < searchID) { low = mid + 1;
+} else {
+high = mid - 1;
+}
+}
+ 
+printf("\nItem ID %d not found.\n", searchID);
+
+
+free(arr);
+}
+
+
+/* Main function */ int main(void)
+{
+int choice;
+
+
+do {
+printf("\n========== ITEM MANAGEMENT SYSTEM ==========\n");
+printf("1. Add Item\n"); printf("2. Display Items\n");
+printf("3. Search Item by ID (Binary Search)\n"); printf("4. Exit\n");
+printf("Enter your choice: ");
+
+
+if (scanf("%d", &choice) != 1) { printf("\nInvalid input.\n");
+
+while (getchar() != '\n' && !feof(stdin)) {}
+
+continue;
+}
+
+
+switch (choice) { case 1:
+addItem(); break;
+
+case 2:
+displayItems(); break;
+
+case 3:
+ 
+binarySearchItemByID(); break;
+
+case 4:
+printf("\nExiting program.\n"); break;
+
+default:
+printf("\nInvalid choice. Please try again.\n");
+}
+
+
+} while (choice != 4);
+
+
+return 0;
+}
